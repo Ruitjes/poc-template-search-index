@@ -3,18 +3,13 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import moviesData from '../public/movies.json'
-import Checkbox from './comp/Checkbox'
+import Slider from './comp/Slider'
 
 export default function Home() {
-  const [rangeval, setRangeval] = useState(1);
   const [movieGenre, setMovieGenre] = useState({});
   const [keys, setKeys] = useState([]);
-  var countKey1 = 0;
-  var countKey2 = 0;
 
   useEffect(() => {
-    console.log("test")
-
     var genresOccurrences = {};
     moviesData.forEach((movieData) => {
       movieData['genres'].forEach((movieGenres) => {
@@ -29,11 +24,6 @@ export default function Home() {
     setMovieGenre(genresOccurrences)
     setKeys(Object.keys(genresOccurrences))
   }, [])
-
-  function handleChange(event) {
-    console.log("test")
-    setRangeval(event.target.value);
-  }
 
   return (
     <div>
@@ -59,9 +49,9 @@ export default function Home() {
         </div>
 
         <div className={styles.blockLeft}>
-            <div>
-                Min Rating = {rangeval} <input type="range" min="1" max="10" className="slider" id="myRange" value={rangeval} onChange={handleChange} />
-            </div>
+
+            <Slider />
+          
             <div>
               <b>Genres:</b>
               { Object.entries(movieGenre).map((t,k) =>  
