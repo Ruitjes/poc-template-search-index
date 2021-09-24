@@ -1,14 +1,37 @@
-import {useState, useEffect} from 'react'
+import {useState, useEffect, Fragment} from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import data from '../public/imdb.json';
+import moviesData from '../public/movies.json'
+import Checkbox from './comp/Checkbox'
 
 export default function Home() {
   const [rangeval, setRangeval] = useState(1);
+  const [movieGenre, setMovieGenre] = useState({});
+  const [keys, setKeys] = useState([]);
+  var countKey1 = 0;
+  var countKey2 = 0;
 
+  useEffect(() => {
+    console.log("test")
+
+    var genresOccurrences = {};
+    moviesData.forEach((movieData) => {
+      movieData['genres'].forEach((movieGenres) => {
+        if (genresOccurrences[movieGenres]) {
+          genresOccurrences[movieGenres] += 1;
+        } else {
+          genresOccurrences[movieGenres] = 1;
+        };
+      })
+    })
+
+    setMovieGenre(genresOccurrences)
+    setKeys(Object.keys(genresOccurrences))
+  }, [])
 
   function handleChange(event) {
+    console.log("test")
     setRangeval(event.target.value);
   }
 
@@ -23,10 +46,9 @@ export default function Home() {
         <h1 className={styles.title}>
           Welcome to the <a href="https://nextjs.org">Seach Index</a> POC
         </h1>
-
-        <div className={styles.card}>
+        <div className={styles.blockTop}>
           <div>
-          <b>Search:</b> <input type="search" name="" id="" />
+            <b>Search:</b> <input type="search" name="" id="" />
           </div>
           <div>
             <select name="cars" id="cars">
@@ -34,18 +56,31 @@ export default function Home() {
               <option value="desc">Rating DESC</option>
             </select>
           </div>
-          <div>
-            Min Rating = {rangeval} <input type="range" min="1" max="10" class="slider" id="myRange" value={rangeval} onChange={handleChange} />
-          </div>
         </div>
 
-        {data.map(d => 
-          <div className={styles.card}>
-            <h4>Title: {d['name']}</h4>
-            <a><b>Description:</b> {d['description']}</a> <br />
-            <a><b>Tags:</b> {d['tags']}</a>
-          </div> 
-        )}
+        <div className={styles.blockLeft}>
+            <div>
+                Min Rating = {rangeval} <input type="range" min="1" max="10" className="slider" id="myRange" value={rangeval} onChange={handleChange} />
+            </div>
+            <div>
+              <b>Genres:</b>
+              { Object.entries(movieGenre).map((t,k) =>  
+                <div>
+                  <input type="checkbox" name={t[0]} value={t[0]} />
+                  <label htmlFor={t[0]}>{t[0]}: {t[1]}</label> <br />
+                </div>
+              )}    
+            </div>
+        </div>
+
+        <div className={styles.blockRight}>
+          {moviesData.map(movieData => 
+                    <div className={styles.card}>
+                      <h4>Title: {movieData['title']}</h4>
+                      <a><b>Year:</b> {movieData['year']}</a> <br />
+                    </div> 
+                  )}
+        </div>
       </main>
 
       <footer className={styles.footer}>
